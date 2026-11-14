@@ -48,3 +48,10 @@ Then open http://localhost:8000. The Cesium ion key in `site/js/app.js` only wor
 ## Publishing
 
 Every push that changes `site/` runs `.github/workflows/pages.yml`, which publishes the `site/` folder. GitHub Pages must be switched on once: repository **Settings → Pages → Source → GitHub Actions**.
+
+## Radio captions, audio and weather notes
+
+`analysis/build_comms.py` writes `site/data/comms.json`: a hand-checked machine transcript of the 116 s air-traffic-control clip, and weather notes
+(Convective SIGMET 45E, airport reports, pilot reports, soundings) from the public archives saved under `data/weather/`.
+The audio file is not in this repository. Visitors can load their own copy in the viewer; it plays locally in the browser only.
+The clip has no clock; it is placed at 17:47:29 UTC by matching the pilot's descent callouts to the ADS-B descent (about +/-4 s).

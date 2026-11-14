@@ -92,8 +92,39 @@
     <button data-win="last">Last 15 min</button>
     <button data-win="all">Whole flight</button>
   </div>
+  <button id="btnComms" aria-expanded="false" aria-controls="comms">Radio &amp; weather</button>
   <button id="btnAbout">Sources and method</button>
 </footer>
+
+
+<div id="captions" aria-live="polite" hidden></div>
+
+<section class="panel" id="comms" hidden aria-label="Radio and weather">
+  <div class="tabs" role="tablist">
+    <button role="tab" data-tab="radio" class="on" aria-selected="true">Radio</button>
+    <button role="tab" data-tab="wx" aria-selected="false">Weather</button>
+    <button id="btnCommsClose" class="x" aria-label="Close panel">✕</button>
+  </div>
+  <div id="tabRadio">
+    <div class="audioBar">
+      <button id="btnAudio">Load audio file…</button>
+      <button id="btnClip" disabled>Play the clip from the start</button>
+      <input type="file" id="audioFile" accept="audio/*,.mp3" hidden>
+    </div>
+    <div id="audioCtl" hidden>
+      <span id="audioName" class="note"></span>
+      <label class="vol">Volume <input type="range" id="audioVol" min="0" max="1" step="0.05" value="1" aria-label="Volume"></label>
+      <span class="sync">Sync <button id="syncMinus" aria-label="Audio 1 second earlier">−</button><output id="syncVal">0.0 s</output><button id="syncPlus" aria-label="Audio 1 second later">+</button></span>
+    </div>
+    <p class="note" id="audioNote">The recording is not part of this site. Pick your own copy of the audio file and it plays here, in your browser only, in step with the flight at 1× and ¼× speed. The captions below always run.</p>
+    <p class="note">Captions are a machine transcript tidied by hand. Wording marked [ ] is uncertain. The clip has no clock: it is placed by matching the pilot's descent callouts to the track, good to about ±4 seconds. Use Sync to nudge it.</p>
+    <ol id="radioList"></ol>
+  </div>
+  <div id="tabWx" hidden>
+    <p class="note">Notes appear as the flight reaches their time. Click one to jump there. Reported conditions are from public archives; the source is under each note.</p>
+    <ol id="wxList"></ol>
+  </div>
+</section>
 
 <div id="loading" class="panel">Loading the scene…</div>
 
@@ -111,9 +142,11 @@
     <li>Descent rate in the dive is computed from GPS altitude, because the broadcast rate stops at −32,640 ft/min.</li>
     <li>Mach and calibrated airspeed are computed from groundspeed, descent rate and the measured atmosphere. Expect about ±0.03 Mach and ±5% airspeed.</li>
     <li>Bank and load are computed from how fast the track and path angle change. The aircraft's attitude is drawn along its flight path; the real pitch and roll attitude were not broadcast.</li>
+    <li>The radio captions are a machine transcript of a 116-second air-traffic-control clip, tidied by hand; some words are uncertain and marked. The clip has no clock. It is placed against the track by matching the pilot's descent callouts ("ten thousand feet per minute", "overspeed condition ... twenty thousand feet per minute") to the descent in the ADS-B data, which puts the start of the clip at about 17:47:29 UTC, good to about ±4 seconds. The recording itself is not part of this site; you can load your own copy to hear it in step with the flight. What the pilots said to each other in the cockpit is not public and is not shown.</li>
     <li>Pressure altitude stopped updating at 8,750 ft; below that only GPS altitude is shown.</li>
     <li>The NTSB reported most of the left elevator in three pieces, 1.3 to 3.8 miles from the impact site. When each piece left the aircraft is not known. The model shows the elevator as "separating" along the stretch of track that lies 3.8 to 1.3 miles out; that timing is an estimate.</li>
     <li>The drawn path is lightly smoothed during the dive, because GPS altitude is broadcast in 25 ft steps and positions carry small timing errors. The readouts use the unsmoothed values.</li>
+    <li>Weather notes are from public archives: Convective SIGMET bulletins from the NWS Aviation Weather Center, airport weather reports (METARs) and pilot reports, via the Iowa Environmental Mesonet. Whether the jet was inside a SIGMET area was checked by plotting the bulletin's reference points against the track; the Miami reference point is approximate.</li>
     <li>Weather radar is from the Miami (KAMX) NEXRAD radar, Level II data from NOAA, volume scans starting 17:40:32, 17:45:48 and 17:51:04 UTC. The radar is about 120 km from the dive, where its beam is about 2 km wide and the tilts are about 2 km apart, so heights are coarse. A full scan takes about five minutes: the tilts that reach cruise level passed the place where the dive began at 17:49:29, 73 seconds after the jet was there. Each point along the path uses the two scans nearest in time. Radar shows rain and ice particles; it does not measure turbulence or icing directly.</li>
     <li>The street-level camera position is approximate.</li>
   </ul>

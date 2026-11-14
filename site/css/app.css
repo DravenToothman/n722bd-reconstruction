@@ -54,7 +54,7 @@ button[disabled] { opacity: 0.45; cursor: not-allowed; }
 #story h2 { margin: 0 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
 #chapters { list-style: none; margin: 0; padding: 0; }
 #chapters li { margin: 0; }
-#chapters button { width: 100%; text-align: left; background: none; border: 0; border-left: 2px solid var(--line); border-radius: 0; padding: 4px 8px; display: flex; gap: 8px; }
+#chapters button { width: 100%; text-align: left; background: none; border: 0; border-left: 2px solid var(--line); border-radius: 0; padding: 3px 8px; display: flex; gap: 8px; }
 #chapters button:hover { background: rgba(255, 255, 255, 0.07); }
 #chapters button time { font: 12px var(--mono); color: var(--muted); flex: none; width: 62px; }
 #chapters li.now button { border-left-color: var(--accent); background: rgba(111, 211, 255, 0.1); }
@@ -97,8 +97,46 @@ dialog#about li { margin: 3px 0; }
 dialog#about a { color: var(--accent); }
 dialog#about form { margin-top: 14px; text-align: right; }
 
+#captions { position: fixed; z-index: 6; left: 330px; right: 350px; bottom: calc(72px + var(--credit-h) + 12px); display: flex; flex-direction: column; gap: 6px; align-items: center; pointer-events: none; }
+#captions .cap { max-width: 720px; background: rgba(5, 8, 12, 0.88); border: 1px solid var(--line); border-radius: 9px; padding: 8px 12px; font-size: 15px; line-height: 1.35; display: flex; gap: 10px; align-items: baseline; }
+#captions .who { flex: none; font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 700; padding: 1px 6px; border-radius: 4px; }
+.who.atc { background: rgba(111, 211, 255, 0.2); color: var(--accent); }
+.who.crew { background: rgba(255, 176, 32, 0.2); color: var(--warn); }
+.who.wx, .kind { background: rgba(160, 220, 140, 0.18); color: #b6e6a1; }
+#captions .cap.unc .txt { font-style: italic; }
+
+#comms { position: fixed; z-index: 7; left: 316px; bottom: calc(72px + var(--credit-h) + 12px); width: 430px; max-width: calc(100vw - 660px); max-height: calc(100vh - 220px); display: flex; flex-direction: column; overflow: hidden; }
+#comms[hidden] { display: none; }
+body.commsOpen #captions { display: none; }
+#comms .tabs { display: flex; gap: 5px; margin-bottom: 8px; flex: none; }
+#comms .tabs button { padding: 4px 12px; }
+#comms .tabs .x { margin-left: auto; padding: 4px 9px; }
+#tabRadio, #tabWx { overflow: auto; min-height: 0; }
+.audioBar { display: flex; gap: 6px; flex-wrap: wrap; }
+#audioCtl { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; margin-top: 8px; }
+#audioCtl .note { margin: 0; flex-basis: 100%; }
+#audioCtl label, #audioCtl .sync { font-size: 12.5px; display: inline-flex; align-items: center; gap: 6px; }
+#audioCtl input[type=range] { width: 90px; accent-color: var(--accent); }
+#audioCtl output { font: 12.5px var(--mono); min-width: 46px; text-align: center; }
+#audioCtl .sync button { padding: 1px 8px; }
+#radioList, #wxList { list-style: none; margin: 10px 0 0; padding: 0; }
+#radioList li, #wxList li { border-left: 2px solid var(--line); margin: 0 0 2px; }
+#radioList li.now, #wxList li.now { border-left-color: var(--accent); background: rgba(111, 211, 255, 0.1); }
+#wxList li.future { opacity: 0.45; }
+#radioList button, #wxList button { width: 100%; text-align: left; background: none; border: 0; border-radius: 0; padding: 5px 8px; display: block; }
+#radioList button:hover, #wxList button:hover { background: rgba(255, 255, 255, 0.07); }
+#radioList time, #wxList time { font: 12px var(--mono); color: var(--muted); margin-right: 8px; }
+#radioList .who, #wxList .kind { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-right: 6px; }
+#radioList .txt { display: block; margin-top: 2px; font-size: 13.5px; }
+#radioList .unc .txt { font-style: italic; }
+#radioList .nt, #wxList .src { display: block; margin-top: 2px; color: var(--muted); font-size: 11.5px; }
+#wxList .ttl { font-weight: 600; }
+#wxList .bd { display: block; margin-top: 2px; font-size: 13px; }
+
 @media (max-width: 1080px) {
   #right { width: 270px; }
+  #captions { left: 12px; right: 290px; }
+  #comms { left: 12px; max-width: calc(100vw - 300px); }
   #btnAbout { display: none; }
 }
 @media (max-width: 760px) {
@@ -114,6 +152,10 @@ dialog#about form { margin-top: 14px; text-align: right; }
   #views .lbl, #views .group:nth-child(3), #groundNote:empty { display: none; }
   #views .group { margin-bottom: 4px; }
   #story { display: none; }
+  #captions { left: 8px; right: 8px; bottom: calc(104px + var(--credit-h) + 4px); }
+  #captions .cap { font-size: 13px; padding: 6px 9px; }
+  #captions .cap:not(:last-child) { display: none; }
+  #comms { left: 8px; right: 8px; width: auto; max-width: none; max-height: 52vh; bottom: calc(104px + var(--credit-h) + 4px); }
   #hud { bottom: calc(104px + var(--credit-h)); max-height: 27vh; padding: 8px 10px; }
   #hud dl { grid-template-columns: repeat(3, 1fr); gap: 5px 8px; margin-top: 6px; }
   #hud dd { font-size: 14px; }

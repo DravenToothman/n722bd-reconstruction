@@ -1,0 +1,238 @@
+{
+ "audioT0": "17:47:29",
+ "audioDur": 116.33,
+ "radio": [
+  {
+   "s": 0.56,
+   "e": 9.7,
+   "who": "crew",
+   "text": "722BD, three five zero, moderate turbulence, plus or minus … seven hundred feet, six hundred feet.",
+   "unc": true,
+   "note": null
+  },
+  {
+   "s": 11.5,
+   "e": 14.0,
+   "who": "atc",
+   "text": "Roger, say outside air temperature?",
+   "unc": false,
+   "note": null
+  },
+  {
+   "s": 14.36,
+   "e": 19.9,
+   "who": "crew",
+   "text": "Negative forty-seven degrees Celsius. We're managing the ice, but it is moderate turbulence [for direct report?].",
+   "unc": false,
+   "note": null
+  },
+  {
+   "s": 20.44,
+   "e": 25.6,
+   "who": "atc",
+   "text": "November 722BD, roger. Let me know if you need anything else. I'm just working [unclear] my airspace right now.",
+   "unc": false,
+   "note": null
+  },
+  {
+   "s": 26.1,
+   "e": 29.0,
+   "who": "crew",
+   "text": "Thank you. If you have any better rides, let us know.",
+   "unc": false,
+   "note": null
+  },
+  {
+   "s": 29.72,
+   "e": 37.6,
+   "who": "atc",
+   "text": "November 722BD, the rides do improve in my airspace. You're kind of far outside of it right now. You can expect better rides ahead.",
+   "unc": false,
+   "note": null
+  },
+  {
+   "s": 38.6,
+   "e": 45.2,
+   "who": "crew",
+   "text": "Roger, 722BD. And now we're picking up precipitation. We need to climb to three seven zero, 722BD.",
+   "unc": false,
+   "note": null
+  },
+  {
+   "s": 45.72,
+   "e": 51.7,
+   "who": "atc",
+   "text": "November 722BD, roger. Climb and maintain flight level three seven zero. [No further right than?] your present heading, for traffic.",
+   "unc": true,
+   "note": null
+  },
+  {
+   "s": 51.72,
+   "e": 54.4,
+   "who": "crew",
+   "text": "Climb three seven zero, 722BD.",
+   "unc": false,
+   "note": null
+  },
+  {
+   "s": 54.86,
+   "e": 59.5,
+   "who": "crew",
+   "text": "722BD, we're descending [eight?] thousand … mayday, mayday … we're descending ten thousand feet per minute.",
+   "unc": true,
+   "note": null
+  },
+  {
+   "s": 60.62,
+   "e": 64.4,
+   "who": "atc",
+   "text": "November 722BD, roger. [unclear]",
+   "unc": true,
+   "note": null
+  },
+  {
+   "s": 64.64,
+   "e": 69.9,
+   "who": "crew",
+   "text": "722BD, we are in an overspeed condition, descending twenty thousand feet per minute.",
+   "unc": false,
+   "note": "The machine transcript read 'overfeed'; the NTSB's account quotes 'overspeed condition'."
+  },
+  {
+   "s": 70.46,
+   "e": 74.9,
+   "who": "atc",
+   "text": "November 722BD, roger. [Altitude at your discretion?] Let me know what you need.",
+   "unc": true,
+   "note": null
+  },
+  {
+   "s": 77.38,
+   "e": 79.8,
+   "who": "crew",
+   "text": "We're going to crash into the ground, 722BD.",
+   "unc": true,
+   "note": "Wording of this transmission is uncertain. Two machine passes agree, but press reports have quoted different words. Check the audio."
+  },
+  {
+   "s": 81.84,
+   "e": 84.5,
+   "who": "atc",
+   "text": "November 722BD, I'm here with you. Talk to me.",
+   "unc": false,
+   "note": null
+  },
+  {
+   "s": 85.02,
+   "e": 91.1,
+   "who": "crew",
+   "text": "We are descending [through?] twenty-two thousand feet, and we are banking sixty degrees.",
+   "unc": true,
+   "note": "The numbers are uncertain. The track shows 25,000 ft and about 77° of bank at this moment."
+  },
+  {
+   "s": 95.8,
+   "e": 97.4,
+   "who": "atc",
+   "text": "November 722BD, roger.",
+   "unc": false,
+   "note": null
+  },
+  {
+   "s": 100.52,
+   "e": 102.8,
+   "who": "crew",
+   "text": "Look outside … [unclear] … look outside!",
+   "unc": true,
+   "note": null
+  },
+  {
+   "s": 106.24,
+   "e": 111.0,
+   "who": "atc",
+   "text": "November 722BD. November 722BD. How do you hear?",
+   "unc": false,
+   "note": null
+  },
+  {
+   "s": 113.1,
+   "e": 115.0,
+   "who": "atc",
+   "text": "November 722BD, Miami.",
+   "unc": false,
+   "note": null
+  }
+ ],
+ "weather": [
+  {
+   "t": "15:37:12",
+   "kind": "sigmet",
+   "title": "Thunderstorm SIGMETs already in effect",
+   "body": "Convective SIGMETs had been issued for Florida and its coastal waters every hour since at least 12:55 UTC (31E at 12:55, 35E at 13:55, 39E at 14:55, 42E at 15:55). Each described an area of thunderstorms moving little, with tops above 45,000 ft, covering south Florida.",
+   "src": "NWS Aviation Weather Center Convective SIGMET bulletins, via the Iowa Environmental Mesonet archive"
+  },
+  {
+   "t": "16:55:00",
+   "kind": "sigmet",
+   "title": "Convective SIGMET 45E issued",
+   "body": "Valid until 18:55 UTC. Florida and coastal waters: area of thunderstorms, moving little, tops above FL450. Its corners are about 70 nm southeast of Ormond Beach, 70 nm east of Miami, 50 nm east of Key West and 20 nm west-northwest of St. Petersburg. By my plotting of those points (the Miami corner is approximate) the jet was inside this area from 17:40 UTC, the earliest point I checked, until impact.",
+   "src": "NWS Aviation Weather Center Convective SIGMET bulletins, via the Iowa Environmental Mesonet archive"
+  },
+  {
+   "t": "17:33:00",
+   "kind": "pirep",
+   "title": "Other crews nearby (pilot reports)",
+   "body": "17:27 Gulfstream IV at FL260 near Miami: in cloud, light chop. 17:33 Boeing 737-800 at FL350 about 55 miles southeast of Palm Beach: light chop. Both were roughly 150 nm from N722BD at the time.",
+   "src": "Pilot reports, via the Iowa Environmental Mesonet archive"
+  },
+  {
+   "t": "17:35:00",
+   "kind": "metar",
+   "title": "Lantana (KLNA), about 3 miles from the impact site",
+   "body": "17:35 UTC: wind from 120° at 7 kt gusting 19, visibility 3 miles, thunderstorms in the vicinity, broken clouds at 2,900 ft, overcast at 3,700 ft, 26 °C.",
+   "src": "KLNA METAR 011735Z"
+  },
+  {
+   "t": "17:41:00",
+   "kind": "sounding",
+   "title": "Air at the jet's level",
+   "body": "From the Miami weather balloons (12:00 and 00:00 UTC, blended): about −48 °C at FL350, wind from 218° at 8 kt, winds under 14 kt at every level, freezing level near 15,000 ft. The crew reported −47 °C.",
+   "src": "KMFL radiosondes, via the Iowa Environmental Mesonet archive"
+  },
+  {
+   "t": "17:42:00",
+   "kind": "metar",
+   "title": "Fort Lauderdale (KFLL)",
+   "body": "17:42 UTC: wind from 110° at 17 kt gusting 26, light rain, visibility 6 miles, broken clouds at 1,500 ft, cumulonimbus to the northwest and northeast moving west.",
+   "src": "KFLL METAR 011742Z"
+  },
+  {
+   "t": "17:45:00",
+   "kind": "pirep",
+   "title": "Pilot report from a Learjet 60 (almost certainly N722BD)",
+   "body": "Filed with a 17:45 UTC time stamp: flight level 350, −46 °C, light clear ice, 25 nm west of Palm Beach. The radio call that matches it is heard in the clip at about 17:47:40.",
+   "src": "Pilot report, via the Iowa Environmental Mesonet archive"
+  },
+  {
+   "t": "17:47:44",
+   "kind": "radar",
+   "title": "Radar: into the top of a growing cell",
+   "body": "The path enters the upper part of a storm cell. Radar shows about 30 dBZ at the jet's altitude above a heavy core, with the cell top near 45,000 ft. Five minutes earlier the same spot showed only weak echo at that height.",
+   "src": "Miami NEXRAD (KAMX) Level II, NOAA"
+  },
+  {
+   "t": "17:49:00",
+   "kind": "pirep",
+   "title": "Urgent pilot report, 81 nm to the north",
+   "body": "17:49 UTC: a Citation near Melbourne reported moderate to severe turbulence at 18,000 ft.",
+   "src": "Pilot report, via the Iowa Environmental Mesonet archive"
+  },
+  {
+   "t": "17:49:33",
+   "kind": "after",
+   "title": "Afterwards",
+   "body": "17:53 UTC, Fort Lauderdale: heavy rain, cumulonimbus, broken clouds at 1,500 ft. 17:55 UTC: Convective SIGMET 48E issued for the same area, valid to 19:55 UTC. Lantana still reported thunderstorms in the vicinity at 17:55.",
+   "src": "NWS Aviation Weather Center Convective SIGMET bulletins, via the Iowa Environmental Mesonet archive; METARs"
+  }
+ ]
+}

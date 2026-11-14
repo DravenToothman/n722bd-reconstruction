@@ -27,6 +27,7 @@
   const DAY0 = C.JulianDate.fromIso8601(F.date + 'T00:00:00Z');
   const jd = (t) => C.JulianDate.addSeconds(DAY0, t, new C.JulianDate());
   const secOf = (j) => C.JulianDate.secondsDifference(j, DAY0);
+  let commsApi = {};                                              // radio and weather module, set up after the data loads
   let bias = 0;                                                  // metres added to every height so the path meets the drawn ground
 
   function indexAt(t) {
@@ -276,17 +277,18 @@
     { t: '15:37:12', title: 'Takeoff from Austin', body: 'N722BD leaves Austin, Texas, for North Eleuthera in the Bahamas with two crew and seven passengers.', src: 'NTSB; ADS-B' },
     { t: '16:00:29', title: 'Cruise at 41,000 ft', body: 'The jet levels at flight level 410 and cruises for about 95 minutes over the Gulf of Mexico.', src: 'ADS-B' },
     { t: '17:36:56', title: 'Descent to 35,000 ft', body: 'With heavy storms ahead over south Florida, the jet descends to flight level 350 and turns left to go around weather.', src: 'ADS-B; air traffic audio as reported' },
-    { t: '17:45:00', title: 'Turbulence and ice', body: 'The crew reports moderate turbulence, an outside temperature of −47 °C and light clear ice. The Miami weather balloon measured −48 °C at this height.', src: 'Pilot report; Miami sounding' },
-    { t: '17:47:02', title: 'Turn toward Freeport', body: 'A right turn from about 050° to 099°. The crew asks to climb to flight level 370 and is cleared.', src: 'ADS-B; NTSB' },
+    { t: '17:45:00', title: 'Turbulence and ice', body: 'A pilot report stamped 17:45 from a Learjet 60 at flight level 350 gives −46 °C and light clear ice. The Miami weather balloon measured −48 °C at this height. On the radio, the crew reports moderate turbulence, −47 °C and managing the ice; that call is heard in the clip at about 17:47:40.', src: 'Pilot report; Miami sounding; radio audio' },
+    { t: '17:47:02', title: 'Turn toward Freeport', body: 'A right turn from about 050° to 099°, heading for Freeport.', src: 'ADS-B' },
+    { t: '17:48:08', title: 'Asks for FL370, approved', body: 'In the radio clip the crew says they are picking up precipitation and asks to climb to flight level 370. The controller approves and asks them to stay no further right than their present heading, for traffic. Timing comes from the audio alignment (about ±4 s). By that alignment the small climb that began at 17:47:56 started before the request.', src: 'Radio audio; ADS-B' },
     { t: '17:47:56', title: 'Climb begins, into a storm top', body: 'The jet climbs about 450 ft in 20 seconds. Groundspeed rises during the climb, which argues against a low-speed stall. Here the path enters the upper part of a growing storm cell: radar shows echo of about 30 dBZ at the jet’s altitude above a heavy core, with the cell top near 45,000 ft. Five minutes earlier the same spot showed only weak echo at this height.', src: 'ADS-B; Miami radar, scanned 17:49 UTC' },
-    { t: '17:48:16', title: 'Dive begins', body: 'The nose drops with the wings level. For 16 seconds the heading stays at 099° while the jet flies at roughly 0.2 to 0.6 g. Speed at this moment is about Mach 0.76, inside the limits. Within 30 seconds of the climb clearance the crew declares a Mayday.', src: 'ADS-B; computed; NTSB' },
-    { t: '17:48:29', title: 'Past the Mach limit', body: 'The jet passes its Mach 0.81 limit about 13 seconds into the dive. The crew reports an overspeed condition.', src: 'Computed; NTSB' },
-    { t: '17:48:37', title: 'Steady 22° dive', body: 'The dive holds near 22° nose-down and 20,000 ft/min at Mach 0.88 to 0.89 while a right bank builds to about 60°, the bank the crew reported. Airspeed passes 340 kt, the highest limit at any altitude.', src: 'Computed; air traffic audio as reported' },
+    { t: '17:48:16', title: 'Dive begins', body: 'The nose drops with the wings level. For 16 seconds the heading stays at 099° while the jet flies at roughly 0.2 to 0.6 g. Speed at this moment is about Mach 0.76, inside the limits. In the radio clip the crew declares Mayday about 8 seconds into the dive, at about 17:48:24, and reports descending at 10,000 ft/min.', src: 'ADS-B; computed; radio audio' },
+    { t: '17:48:29', title: 'Past the Mach limit', body: 'The jet passes its Mach 0.81 limit about 13 seconds into the dive. The crew reports an overspeed condition at about 17:48:34, descending at 20,000 ft/min.', src: 'Computed; radio audio; NTSB' },
+    { t: '17:48:37', title: 'Steady 22° dive', body: 'The dive holds near 22° nose-down and 20,000 ft/min at Mach 0.88 to 0.89 while a right bank builds to about 60°. Airspeed passes 340 kt, the highest limit at any altitude. About 20 seconds later the crew says they are banking sixty degrees.', src: 'Computed; radio audio' },
     { t: '17:48:52', title: 'Spiral', body: 'The bank passes 65° and keeps growing; the nose falls through. This point is 3.8 miles from the impact site, the distance of the farthest piece of the left elevator. Speed here is Mach 0.89 and about 360 kt.', src: 'Computed; NTSB' },
     { t: '17:49:16', title: 'Near-vertical', body: 'Bank is past 90° and the path is 52° nose-down at about 48,000 ft/min, Mach 0.93 and 480 kt. This point is 1.3 miles out, the distance of the nearest elevator piece.', src: 'Computed; NTSB' },
     { t: '17:49:23', title: 'Pressure altitude stops', body: 'The broadcast pressure altitude freezes at 8,750 ft. GPS altitude keeps reporting. Descent peaks near 58,000 ft/min at Mach 0.94 to 0.96 and about 575 kt, roughly three times the air load at the airspeed limit.', src: 'ADS-B; computed' },
     { t: '17:49:33', title: 'Impact', body: 'The jet strikes Military Trail between Cresthaven Boulevard and 10th Avenue North, about 77 seconds after the dive began. All nine people on board were killed.', src: 'ADS-B; NTSB' },
-  ].map((c) => Object.assign(c, { sec: hms(c.t) }));
+  ].map((c) => Object.assign(c, { sec: hms(c.t) })).sort((a, b) => a.sec - b.sec);
   const chapterEls = CHAPTERS.map((c) => {
     const li = document.createElement('li'), b = document.createElement('button');
     b.innerHTML = '<time>' + c.t + '</time><span></span>'; b.lastChild.textContent = c.title;
@@ -338,7 +340,7 @@
   }
 
   // ---------------------------------------------------------------- playback
-  const WINDOWS = { dive: [hms('17:47:30'), T_END], last: [hms('17:34:00'), T_END], all: [T_START, T_END] };
+  const WINDOWS = { dive: [hms('17:47:25'), T_END], last: [hms('17:34:00'), T_END], all: [T_START, T_END] };
   let win = 'dive';
   const scrubber = $('scrubber');
   function setPlaying(on) { clock.shouldAnimate = on; $('btnPlay').textContent = on ? '❚❚' : '▶'; $('btnPlay').setAttribute('aria-label', on ? 'Pause' : 'Play'); }
@@ -377,13 +379,104 @@
     const t = now();
     if (clock.shouldAnimate && t >= T_END - 0.01) setPlaying(false);
     const s = updateAircraft(t);
-    updateHud(s, t); updateChapter(t);
+    updateHud(s, t); updateChapter(t); if (commsApi.update) commsApi.update(t);
     if (!scrubbing) { const [a, b] = WINDOWS[win]; scrubber.value = String(Math.round(clamp((t - a) / (b - a), 0, 1) * 1000)); }
   });
 
+
+  // ---------------------------------------------------------------- radio captions, audio and weather notes
+  const COMMS = await fetch('data/comms.json').then((r) => (r.ok ? r.json() : null)).catch(() => null);
+  if (COMMS) {
+    const AUDIO_T0 = hms(COMMS.audioT0);
+    let syncOff = 0;                                              // listener nudge, seconds (positive = audio later)
+    const clipT = (a) => AUDIO_T0 + syncOff + a;                  // UTC seconds at clip second a
+    const clipAt = (t) => t - AUDIO_T0 - syncOff;                 // clip second at UTC seconds t
+    const WHO = { atc: 'Miami Center', crew: 'N722BD crew', wx: 'Weather' };
+    COMMS.weather.forEach((w) => { w.sec = hms(w.t); });
+    const mk = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+    // panel lists
+    const radioItems = COMMS.radio.map((l) => {
+      const li = mk('li', l.unc ? 'unc' : ''), b = mk('button'), tm = mk('time');
+      b.appendChild(tm); b.appendChild(mk('span', 'who ' + l.who, WHO[l.who])); b.appendChild(mk('span', 'txt', l.text));
+      if (l.note) b.appendChild(mk('span', 'nt', l.note));
+      b.addEventListener('click', () => seek(clipT(l.s), true));
+      li.appendChild(b); $('radioList').appendChild(li); return { li, tm, l };
+    });
+    const showTimes = () => radioItems.forEach((r) => { r.tm.textContent = clock8(Math.round(clipT(r.l.s))); });
+    showTimes();
+    const wxItems = COMMS.weather.map((w) => {
+      const li = mk('li'), b = mk('button'), tm = mk('time', null, w.t.slice(0, 5));
+      b.appendChild(tm); b.appendChild(mk('span', 'kind', { sigmet: 'SIGMET', pirep: 'Pilot report', metar: 'Airport', sounding: 'Balloon', radar: 'Radar', after: 'After' }[w.kind] || w.kind)); b.appendChild(mk('span', 'ttl', w.title));
+      b.appendChild(mk('span', 'bd', w.body)); b.appendChild(mk('span', 'src', 'Source: ' + w.src));
+      b.addEventListener('click', () => seek(w.sec, true));
+      li.appendChild(b); $('wxList').appendChild(li); return { li, w };
+    });
+
+    // captions over the scene
+    const capBox = $('captions'); let capKey = '';
+    function updateComms(t) {
+      const a = clipAt(t), lines = [];
+      radioItems.forEach((r) => { const on = a >= r.l.s - 0.15 && a <= r.l.e + 2.2; r.li.classList.toggle('now', a >= r.l.s - 0.15 && a <= r.l.e + 0.5); if (on) lines.push({ who: r.l.who, text: r.l.text, unc: r.l.unc, k: 'r' + r.l.s }); });
+      let lastWx = -1; wxItems.forEach((x, i) => { if (x.w.sec <= t) lastWx = i; x.li.classList.toggle('future', x.w.sec > t); });
+      wxItems.forEach((x, i) => x.li.classList.toggle('now', i === lastWx));
+      const wxNow = lastWx >= 0 && t - wxItems[lastWx].w.sec < 12 && t >= wxItems[lastWx].w.sec ? wxItems[lastWx].w : null;
+      const show = lines.slice(-2); const key = show.map((x) => x.k).join('|') + (wxNow ? '|' + wxNow.t : '');
+      if (key !== capKey) {
+        capKey = key; capBox.textContent = '';
+        show.forEach((x) => { const d = mk('div', 'cap' + (x.unc ? ' unc' : '')); d.appendChild(mk('span', 'who ' + x.who, WHO[x.who])); d.appendChild(mk('span', 'txt', x.text)); capBox.appendChild(d); });
+        if (wxNow) { const d = mk('div', 'cap'); d.appendChild(mk('span', 'who wx', 'Weather')); d.appendChild(mk('span', 'txt', wxNow.title + ' — see Radio & weather')); capBox.appendChild(d); }
+        capBox.hidden = !capBox.childNodes.length;
+      }
+      if (!$('comms').hidden) {
+        const cur = $('radioList').querySelector('li.now'); if (cur && cur.dataset.seen !== '1') { cur.dataset.seen = '1'; cur.scrollIntoView({ block: 'nearest' }); }
+        $('radioList').querySelectorAll('li:not(.now)').forEach((x) => { x.dataset.seen = ''; });
+        const wcur = $('wxList').querySelector('li.now'); if (wcur && wcur.dataset.seen !== '1') { wcur.dataset.seen = '1'; if (!$('tabWx').hidden) wcur.scrollIntoView({ block: 'nearest' }); }
+      }
+    }
+
+    // panel open / tabs
+    const panel = $('comms');
+    const setPanel = (open) => { panel.hidden = !open; document.body.classList.toggle('commsOpen', open); $('btnComms').setAttribute('aria-expanded', String(open)); };
+    $('btnComms').addEventListener('click', () => setPanel(panel.hidden));
+    $('btnCommsClose').addEventListener('click', () => setPanel(false));
+    document.querySelectorAll('[data-tab]').forEach((b) => b.addEventListener('click', () => {
+      document.querySelectorAll('[data-tab]').forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', String(x === b)); });
+      $('tabRadio').hidden = b.dataset.tab !== 'radio'; $('tabWx').hidden = b.dataset.tab !== 'wx';
+    }));
+
+    // audio: the person's own copy of the clip, played locally and kept in step with the flight clock
+    const audio = new Audio(); audio.preload = 'auto';
+    let audioReady = false;
+    $('btnAudio').addEventListener('click', () => $('audioFile').click());
+    $('audioFile').addEventListener('change', () => {
+      const f = $('audioFile').files[0]; if (!f) return;
+      if (audio.src) URL.revokeObjectURL(audio.src);
+      audio.src = URL.createObjectURL(f); audioReady = true; audio.volume = Number($('audioVol').value);
+      $('audioName').textContent = 'Loaded: ' + f.name; $('audioCtl').hidden = false; $('btnClip').disabled = false;
+      $('audioNote').textContent = 'Audio plays at 1× and ¼× speed while the flight is playing. It stays in your browser; nothing is uploaded.';
+    });
+    $('audioVol').addEventListener('input', () => { audio.volume = Number($('audioVol').value); });
+    const setSync = (v) => { syncOff = Math.round(v * 10) / 10; $('syncVal').textContent = (syncOff > 0 ? '+' : syncOff < 0 ? '−' : '') + Math.abs(syncOff).toFixed(1) + ' s'; showTimes(); };
+    $('syncMinus').addEventListener('click', () => setSync(syncOff - 1));
+    $('syncPlus').addEventListener('click', () => setSync(syncOff + 1));
+    $('btnClip').addEventListener('click', () => {
+      document.querySelectorAll('[data-speed]').forEach((b) => { if (b.dataset.speed === '1') b.click(); });
+      seek(clipT(0), true); setPlaying(true);
+    });
+    function syncAudio(t) {
+      if (!audioReady) return;
+      const a = clipAt(t), m = clock.multiplier, ok = clock.shouldAnimate && t < T_END - 0.05 && (m === 1 || m === 0.25) && a >= 0 && a < (audio.duration || COMMS.audioDur);
+      if (!ok) { if (!audio.paused) audio.pause(); return; }
+      if (audio.playbackRate !== m) { audio.preservesPitch = true; audio.playbackRate = m; }
+      if (audio.paused || Math.abs(audio.currentTime - a) > 0.45) { audio.currentTime = a; if (audio.paused) audio.play().catch(() => { $('audioNote').textContent = 'The browser blocked audio playback. Click Play on the flight, or the clip button, once more.'; }); }
+    }
+    commsApi = { update: (t) => { updateComms(t); syncAudio(t); }, state: () => ({ audioT: audio.currentTime, audioPaused: audio.paused, rate: audio.playbackRate, syncOff, audioReady, captions: capBox.textContent, panel: !panel.hidden }), setSync };
+  }
+
   // ---------------------------------------------------------------- start
   setWindow('dive', true);
-  window.__app = { model, seek, setCam, setGround, setWindow, setPlaying, hms, stateAt, state: () => ({ groundMode, bias, camMode, t: now(), elev: !!elevNode }) };
+  window.__app = { comms: () => commsApi, model, seek, setCam, setGround, setWindow, setPlaying, hms, stateAt, state: () => ({ groundMode, bias, camMode, t: now(), elev: !!elevNode }) };
   await setGround('photoreal');
   setCam('chase');
   $('loading').classList.add('gone');
