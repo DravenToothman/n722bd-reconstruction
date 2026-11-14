@@ -1,1 +1,16 @@
-# n722bd-reconstruction
+# N722BD Reconstruction
+
+Independent, unofficial flight-path reconstruction of the Learjet 60 N722BD accident near Greenacres, Florida, on 1 November 2026.
+
+This is not an NTSB product. The NTSB investigation is ongoing and its findings take precedence over anything here. Estimated values are marked as estimates.
+
+## Layout
+
+- `site/` – the 3D viewer published with GitHub Pages
+- `data/` – derived data used by the viewer (track, winds, radar, terrain)
+- `analysis/` – scripts that produce the derived data
+- `CREDITS.md` – data sources and licenses
+
+## Status
+
+Scaffold only. Analysis and viewer are being added.
