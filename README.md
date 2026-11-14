@@ -13,4 +13,12 @@ This is not an NTSB product. The NTSB investigation is ongoing and its findings 
 
 ## Status
 
-Scaffold only. Analysis and viewer are being added.
+- Done: dive speeds and loads from the ADS-B track with the measured atmosphere (`analysis/dive_loads.py`).
+- Next: radar along the track, flight-dynamics model, 3D viewer.
+
+## Reproduce the dive loads
+
+```
+cd analysis
+python3 dive_loads.py ../data/n722bd-adsb-2026-11-01.csv ../data/n722bd-dive-loads-2026-11-01.csv
+```
