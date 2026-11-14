@@ -67,8 +67,13 @@ button[disabled] { opacity: 0.45; cursor: not-allowed; }
 #views .group { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; margin-bottom: 7px; }
 #views .lbl { flex-basis: 100%; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
 #views label { font-size: 12.5px; display: inline-flex; gap: 4px; align-items: center; margin-right: 6px; cursor: pointer; }
+#views label:has(input:disabled) { color: var(--muted); cursor: default; }
 #views button { padding: 4px 8px; font-size: 12.5px; }
 #groundNote { margin: 0; }
+#radarLegend { margin: 2px 0 6px; }
+#radarLegend .bar { display: block; height: 8px; border-radius: 4px; background: linear-gradient(90deg, rgb(120,190,235) 0%, rgb(70,150,225) 18%, rgb(60,185,120) 27%, rgb(240,220,70) 45%, rgb(245,150,50) 64%, rgb(225,50,45) 82%, rgb(200,60,200) 100%); }
+#radarLegend .scale { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+#radarLegend .scale i { font-style: normal; }
 
 #transport { position: fixed; z-index: 6; left: 12px; right: 12px; bottom: calc(8px + var(--credit-h)); display: flex; align-items: center; gap: 10px; padding: 8px 12px; }
 #btnPlay { width: 40px; height: 34px; font-size: 15px; flex: none; }
@@ -109,7 +114,7 @@ dialog#about form { margin-top: 14px; text-align: right; }
   #views .lbl, #views .group:nth-child(3), #groundNote:empty { display: none; }
   #views .group { margin-bottom: 4px; }
   #story { display: none; }
-  #hud { bottom: calc(104px + var(--credit-h)); max-height: 32vh; padding: 8px 10px; }
+  #hud { bottom: calc(104px + var(--credit-h)); max-height: 27vh; padding: 8px 10px; }
   #hud dl { grid-template-columns: repeat(3, 1fr); gap: 5px 8px; margin-top: 6px; }
   #hud dd { font-size: 14px; }
   #hud .clock { font-size: 20px; }

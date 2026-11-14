@@ -11,7 +11,7 @@ This is not an NTSB product. The NTSB investigation is ongoing and its findings 
 - `site/` – the 3D viewer published with GitHub Pages (CesiumJS)
   - `site/data/flight.json` – the flight track and computed values the viewer plays back
   - `site/model/learjet60/` – aircraft model (see `CREDITS.md` for its license)
-- `data/` – source and derived data (ADS-B track, Miami soundings, dive-loads table)
+- `data/` – source and derived data (ADS-B track, Miami soundings, dive-loads table, radar along the track)
 - `analysis/` – scripts that produce the derived data
 - `CREDITS.md` – data sources and licenses
 
@@ -21,6 +21,7 @@ This is not an NTSB product. The NTSB investigation is ongoing and its findings 
 - Ground: Google Photorealistic 3D Tiles (through Cesium ion), with satellite imagery on terrain and USGS aerial imagery as alternatives.
 - Readouts at every moment: altitude, vertical speed, groundspeed, Mach, calibrated airspeed, the flight-manual limit at that altitude, path angle, bank and load.
 - The stretch of track over which the left elevator is estimated to have separated.
+- Weather radar from the Miami (KAMX) NEXRAD radar: a curtain along the flight path and a slice at cruise level.
 
 Mach, airspeed, bank and load are computed, not broadcast. The method and its error bars are described in the viewer under "Sources and method".
 
@@ -29,8 +30,11 @@ Mach, airspeed, bank and load are computed, not broadcast. The method and its er
 ```
 cd analysis
 python3 dive_loads.py ../data/n722bd-adsb-2026-11-01.csv ../data/n722bd-dive-loads-2026-11-01.csv
+python3 radar.py <folder with the KAMX .ar2v files>    # optional; needs arm-pyart, scipy, pillow
 python3 build_site_data.py
 ```
+
+The radar volume files are not in this repository (about 14 MB each). They are NOAA NEXRAD Level II data for KAMX, 1 November 2026, volumes starting 17:40:32, 17:45:48 and 17:51:04 UTC, available from NOAA NCEI.
 
 ## Run the viewer locally
 

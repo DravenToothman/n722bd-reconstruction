@@ -34,6 +34,7 @@
     <div><dt>Load</dt><dd id="hG">--</dd></div>
     <div><dt>To impact site</dt><dd id="hDist">--</dd></div>
     <div class="wide"><dt>Left elevator</dt><dd id="hElev">Attached</dd></div>
+    <div class="wide" id="rowRadar"><dt>Radar echo at the jet</dt><dd id="hRadar">--</dd></div>
   </dl>
   <p class="note">Altitude, position and groundspeed are broadcast ADS-B values. Mach, airspeed, bank and load are computed from them. Attitude is estimated from the flight path.</p>
 </section>
@@ -65,7 +66,10 @@
     <label><input type="checkbox" id="lyCurtain" checked> Altitude curtain</label>
     <label><input type="checkbox" id="lyLabels" checked> Labels</label>
     <label><input type="checkbox" id="lyDebris" checked> Elevator debris range</label>
+    <label class="radar"><input type="checkbox" id="lyRadarPath" checked> Radar along the path</label>
+    <label class="radar"><input type="checkbox" id="lyRadarLevel"> Radar at 37,000 ft</label>
   </div>
+  <div id="radarLegend" hidden><span class="bar"></span><span class="scale"><i>5</i><i>20</i><i>35</i><i>50</i><i>60 dBZ</i></span></div>
   <p id="groundNote" class="note" aria-live="polite"></p>
 </nav>
 </aside>
@@ -110,6 +114,7 @@
     <li>Pressure altitude stopped updating at 8,750 ft; below that only GPS altitude is shown.</li>
     <li>The NTSB reported most of the left elevator in three pieces, 1.3 to 3.8 miles from the impact site. When each piece left the aircraft is not known. The model shows the elevator as "separating" along the stretch of track that lies 3.8 to 1.3 miles out; that timing is an estimate.</li>
     <li>The drawn path is lightly smoothed during the dive, because GPS altitude is broadcast in 25 ft steps and positions carry small timing errors. The readouts use the unsmoothed values.</li>
+    <li>Weather radar is from the Miami (KAMX) NEXRAD radar, Level II data from NOAA, volume scans starting 17:40:32, 17:45:48 and 17:51:04 UTC. The radar is about 120 km from the dive, where its beam is about 2 km wide and the tilts are about 2 km apart, so heights are coarse. A full scan takes about five minutes: the tilts that reach cruise level passed the place where the dive began at 17:49:29, 73 seconds after the jet was there. Each point along the path uses the two scans nearest in time. Radar shows rain and ice particles; it does not measure turbulence or icing directly.</li>
     <li>The street-level camera position is approximate.</li>
   </ul>
   <h3>Credits</h3>

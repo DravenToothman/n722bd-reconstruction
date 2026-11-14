@@ -15,12 +15,17 @@ rows = [r for r in csv.DictReader(open(os.path.join(ROOT, 'data', 'n722bd-adsb-2
 P = [dict(t=sec(r['utc']), lat=float(r['lat']), lon=float(r['lon']), ab=float(r['alt_baro_ft']), ag=float(r['alt_geom_ft']),
           gs=float(r['gs_kt']), trk=float(r['track_deg'])) for r in rows]
 dive = {round(sec(r['utc']), 2): r for r in csv.DictReader(open(os.path.join(ROOT, 'data', 'n722bd-dive-loads-2026-11-01.csv')))}
+radar_csv = os.path.join(ROOT, 'data', 'n722bd-radar-along-track.csv')   # written by radar.py; optional
+radar = {round(sec(r['utc']), 2): r for r in csv.DictReader(open(radar_csv))} if os.path.exists(radar_csv) else {}
 
 def slope(a, key, t0):
     tm = sum(q['t'] for q in a) / len(a); m = sum(key(q) for q in a) / len(a); den = sum((q['t'] - tm) ** 2 for q in a)
     return sum((q['t'] - tm) * (key(q) - m) for q in a) / den if den > 0 else 0.0
 
 for i, p in enumerate(P):
+    rd = radar.get(round(p['t'], 2), {})
+    p['dbz'] = float(rd['dbz_at_aircraft']) if rd.get('dbz_at_aircraft') else None
+    p['top'] = float(rd['echo_top_18dbz_ft']) if rd.get('echo_top_18dbz_ft') else None
     d = dive.get(round(p['t'], 2))
     if d and p['t'] >= T_DIVE_TABLE:
         p.update(vs=float(d['vs_geom_fpm']), mach=float(d['mach']), kcas=float(d['kcas']), fpa=float(d['fpa_deg']), bank=float(d['bank_deg']),
@@ -68,6 +73,7 @@ out = {
     'altGps': [int(round(p['ag'] + GEOID_FT, -1)) for p in P],      # GPS altitude converted to feet above mean sea level
     'gs': [r1(p['gs'], 0) for p in P], 'trk': [r1(p['trk']) for p in P], 'vs': [r1(p['vs'], 0) for p in P],
     'fpa': [r1(p['fpa']) for p in P], 'bank': [r1(p['bank'], 0) for p in P], 'n': [r1(p['n']) for p in P],
+    'dbz': [r1(p['dbz'], 0) for p in P], 'top': [r1(p['top'], 0) for p in P],   # radar echo at the aircraft, and 18 dBZ echo top (ft)
     'mach': [r1(p['mach'], 2) for p in P], 'kcas': [r1(p['kcas'], 0) for p in P], 'dist': [r1(p['dist'], 2) for p in P],
 }
 os.makedirs(os.path.join(ROOT, 'site', 'data'), exist_ok=True)

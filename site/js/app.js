@@ -18,9 +18,11 @@
   // ---------------------------------------------------------------- data
   const F = await (await fetch('data/flight.json')).json();
   const N = F.t.length;
+  const RADAR = await fetch('data/radar.json').then((r) => (r.ok ? r.json() : null)).catch(() => null);
   const T_START = F.t[0], T_IMPACT = F.tImpact, T_END = T_IMPACT + 20, T_DIVE = F.tDive;
   const T_ELEV0 = hms('17:48:52'), T_ELEV1 = hms('17:49:16');   // stretch of track 3.8 to 1.3 miles from the site
   const H_GROUND = F.h[N - 1];                                   // ground height at the site, metres above the ellipsoid
+  const RADAR_T0 = hms('17:41:00');                               // radar sampling starts when the jet levels at FL350
   const AOA = 2;                                                 // nominal angle of attack added to the path angle, degrees
   const DAY0 = C.JulianDate.fromIso8601(F.date + 'T00:00:00Z');
   const jd = (t) => C.JulianDate.addSeconds(DAY0, t, new C.JulianDate());
@@ -38,7 +40,7 @@
     const L = (k) => { const a = F[k][i], b = F[k][j]; return a == null ? b : b == null ? a : a + (b - a) * f; };
     const dTrk = ((F.trk[j] - F.trk[i] + 540) % 360) - 180;
     return { t, i, lat: L('lat'), lon: L('lon'), h: L('h'), trk: (F.trk[i] + dTrk * f + 360) % 360, fpa: L('fpa'), bank: L('bank'),
-      gs: L('gs'), vs: L('vs'), mach: L('mach'), kcas: L('kcas'), n: L('n'), dist: L('dist'),
+      gs: L('gs'), vs: L('vs'), mach: L('mach'), kcas: L('kcas'), n: L('n'), dist: L('dist'), dbz: L('dbz'), top: L('top'),
       altBaro: F.altBaro[i] == null || F.altBaro[j] == null ? null : L('altBaro'), altGps: L('altGps') };
   }
   const posOf = (s, result) => C.Cartesian3.fromDegrees(s.lon, s.lat, s.h + bias, C.Ellipsoid.WGS84, result);
@@ -101,6 +103,8 @@
     return s;
   }
 
+  let camMode = 'chase';
+
   // ---------------------------------------------------------------- track, curtain, labels
   const cBase = C.Color.fromCssColorString('#d6ecff'), cLimit = C.Color.fromCssColorString('#ffd23f'), cOver = C.Color.fromCssColorString('#ff2d2d');
   function trackColor(i) {
@@ -122,6 +126,7 @@
   ];
   const notes = new C.CustomDataSource('notes'); viewer.dataSources.add(notes);
   const debris = new C.CustomDataSource('debris'); viewer.dataSources.add(debris);
+  const radarDs = new C.CustomDataSource('radar'); viewer.dataSources.add(radarDs);
   let trackPrim = null, curtain = null, diveSphere = null;
   const labelStyle = (text) => ({
     text, font: '13px system-ui, sans-serif', fillColor: C.Color.WHITE, showBackground: true,
@@ -148,7 +153,7 @@
     }));
     diveSphere = C.BoundingSphere.fromPoints(wall);
     notes.entities.removeAll();
-    curtain = notes.entities.add({ wall: { positions: wall, minimumHeights: wallMin, material: C.Color.fromCssColorString('#8fd8ff').withAlpha(0.2), outline: false }, show: $('lyCurtain').checked });
+    curtain = notes.entities.add({ wall: { positions: wall, minimumHeights: wallMin, material: C.Color.fromCssColorString('#8fd8ff').withAlpha(0.2), outline: false }, show: curtainOn() });
     const showLabels = $('lyLabels').checked;
     EVENTS.forEach(([time, text]) => {
       notes.entities.add({ position: posOf(stateAt(hms(time))), show: showLabels, point: { pixelSize: 7, color: C.Color.WHITE, outlineColor: C.Color.BLACK, outlineWidth: 1, disableDepthTestDistance: Number.POSITIVE_INFINITY, distanceDisplayCondition: new C.DistanceDisplayCondition(0, 160000) }, label: labelStyle(text), properties: { kind: 'label' } });
@@ -162,8 +167,30 @@
     debris.entities.add({ position: C.Cartesian3.fromRadians(c.longitude, c.latitude, H_GROUND + bias + 30), label: Object.assign(labelStyle('Left elevator pieces found 1.3 to 3.8 mi from the site (NTSB); directions not released'), { horizontalOrigin: C.HorizontalOrigin.CENTER, pixelOffset: new C.Cartesian2(0, -14), distanceDisplayCondition: new C.DistanceDisplayCondition(3000, 60000) }) });
     debris.show = $('lyDebris').checked;
   }
-  buildStatic(); buildDebris();
-  $('lyCurtain').addEventListener('change', (e) => { if (curtain) curtain.show = e.target.checked; });
+  // Weather radar: a curtain along the ground track and a level slice at cruise height
+  let radarPath = null, radarLevel = null;
+  const radarFaint = C.Color.WHITE.withAlpha(0.4);   // close-up cameras look along the curtain, so it is drawn fainter there
+  const curtainOn = () => $('lyCurtain').checked && !(RADAR && $('lyRadarPath').checked);   // the two curtains share a plane
+  function buildRadar() {
+    radarDs.entities.removeAll(); radarPath = radarLevel = null;
+    if (!RADAR) return;
+    const c = RADAR.curtain, n = c.lat.length, pos = [], lo = [], hi = [];
+    for (let i = 0; i < n; i++) { pos.push(C.Cartesian3.fromDegrees(c.lon[i], c.lat[i])); lo.push(H_GROUND + bias); hi.push(c.topMslM - RADAR.geoidM + bias); }
+    radarPath = radarDs.entities.add({ show: $('lyRadarPath').checked, wall: { positions: pos, minimumHeights: lo, maximumHeights: hi, material: new C.ImageMaterialProperty({ image: c.image, transparent: true, color: new C.CallbackProperty(() => (camMode === 'chase' || camMode === 'street' ? radarFaint : C.Color.WHITE), false) }) } });
+    const v = RADAR.level;
+    radarLevel = radarDs.entities.add({ show: $('lyRadarLevel').checked, rectangle: { coordinates: C.Rectangle.fromDegrees(v.west, v.south, v.east, v.north), height: v.mslM - RADAR.geoidM + bias, material: new C.ImageMaterialProperty({ image: v.image, transparent: true }) } });
+  }
+  function radarUi() {
+    if (radarPath) radarPath.show = $('lyRadarPath').checked;
+    if (radarLevel) radarLevel.show = $('lyRadarLevel').checked;
+    if (curtain) curtain.show = curtainOn();
+    $('lyCurtain').disabled = !!(RADAR && $('lyRadarPath').checked);
+    $('radarLegend').hidden = !(RADAR && ($('lyRadarPath').checked || $('lyRadarLevel').checked));
+  }
+  if (!RADAR) { document.querySelectorAll('label.radar').forEach((l) => { l.hidden = true; }); $('rowRadar').hidden = true; }
+  $('lyRadarPath').addEventListener('change', radarUi); $('lyRadarLevel').addEventListener('change', radarUi);
+  buildStatic(); buildDebris(); buildRadar(); radarUi();
+  $('lyCurtain').addEventListener('change', radarUi);
   $('lyLabels').addEventListener('change', (e) => notes.entities.values.forEach((en) => { if (en.properties && en.properties.kind) en.show = e.target.checked; }));
   $('lyDebris').addEventListener('change', (e) => { debris.show = e.target.checked; });
 
@@ -197,14 +224,14 @@
       else h = 0;
     } catch (e) { h = undefined; }
     if (seq !== groundSeq || typeof h !== 'number' || !isFinite(h) || Math.abs(h - H_GROUND) > 80) return;
-    bias = h - H_GROUND; buildStatic(); buildDebris();
+    bias = h - H_GROUND; buildStatic(); buildDebris(); buildRadar();
   }
   async function setGround(mode, isFallback) {
     const seq = ++groundSeq, order = ['photoreal', 'satellite', 'usgs'];
     for (let k = order.indexOf(mode); k < order.length; k++) {
       try {
         await loadGround(order[k]); if (seq !== groundSeq) return;
-        groundMode = order[k]; bias = order[k] === 'usgs' ? -H_GROUND : 0; buildStatic(); buildDebris();
+        groundMode = order[k]; bias = order[k] === 'usgs' ? -H_GROUND : 0; buildStatic(); buildDebris(); buildRadar();
         document.querySelectorAll('[data-ground]').forEach((b) => b.classList.toggle('on', b.dataset.ground === groundMode));
         $('groundNote').textContent = order[k] === mode ? '' : GROUND_NAMES[mode] + ' could not be loaded here, so ' + GROUND_NAMES[order[k]] + ' is shown instead.';
         calibrate(groundMode, seq);
@@ -216,7 +243,6 @@
   document.querySelectorAll('[data-ground]').forEach((b) => b.addEventListener('click', () => setGround(b.dataset.ground)));
 
   // ---------------------------------------------------------------- camera
-  let camMode = 'chase';
   const STREET = { lat: 26.6222, lon: -80.11295 };   // on Military Trail, about 0.7 mi south of the site (approximate)
   const scratchDir = new C.Cartesian3(), scratchUp = new C.Cartesian3(), scratchCam = new C.Cartesian3();
   function setCam(mode) {
@@ -251,7 +277,7 @@
     { t: '17:36:56', title: 'Descent to 35,000 ft', body: 'With heavy storms ahead over south Florida, the jet descends to flight level 350 and turns left to go around weather.', src: 'ADS-B; air traffic audio as reported' },
     { t: '17:45:00', title: 'Turbulence and ice', body: 'The crew reports moderate turbulence, an outside temperature of −47 °C and light clear ice. The Miami weather balloon measured −48 °C at this height.', src: 'Pilot report; Miami sounding' },
     { t: '17:47:02', title: 'Turn toward Freeport', body: 'A right turn from about 050° to 099°. The crew asks to climb to flight level 370 and is cleared.', src: 'ADS-B; NTSB' },
-    { t: '17:47:56', title: 'Climb begins', body: 'The jet climbs about 450 ft in 20 seconds. Groundspeed rises during the climb, which argues against a low-speed stall.', src: 'ADS-B' },
+    { t: '17:47:56', title: 'Climb begins, into a storm top', body: 'The jet climbs about 450 ft in 20 seconds. Groundspeed rises during the climb, which argues against a low-speed stall. Here the path enters the upper part of a growing storm cell: radar shows echo of about 30 dBZ at the jet’s altitude above a heavy core, with the cell top near 45,000 ft. Five minutes earlier the same spot showed only weak echo at this height.', src: 'ADS-B; Miami radar, scanned 17:49 UTC' },
     { t: '17:48:16', title: 'Dive begins', body: 'The nose drops with the wings level. For 16 seconds the heading stays at 099° while the jet flies at roughly 0.2 to 0.6 g. Speed at this moment is about Mach 0.76, inside the limits. Within 30 seconds of the climb clearance the crew declares a Mayday.', src: 'ADS-B; computed; NTSB' },
     { t: '17:48:29', title: 'Past the Mach limit', body: 'The jet passes its Mach 0.81 limit about 13 seconds into the dive. The crew reports an overspeed condition.', src: 'Computed; NTSB' },
     { t: '17:48:37', title: 'Steady 22° dive', body: 'The dive holds near 22° nose-down and 20,000 ft/min at Mach 0.88 to 0.89 while a right bank builds to about 60°, the bank the crew reported. Airspeed passes 340 kt, the highest limit at any altitude.', src: 'Computed; air traffic audio as reported' },
@@ -303,6 +329,10 @@
     const e = $('hElev');
     e.textContent = t < T_ELEV0 ? 'Attached' : t < T_ELEV1 ? 'Separating (timing estimated)' : 'Separated';
     $('hStatus').hidden = t < T_IMPACT;
+    if (RADAR) {
+      const z = s.dbz, word = z == null || z < 5 ? '' : z < 20 ? 'light' : z < 35 ? 'moderate' : z < 50 ? 'heavy' : 'intense';
+      $('hRadar').textContent = s.t < RADAR_T0 ? '—' : z == null || z < 5 ? 'None or weak' : Math.round(z) + ' dBZ (' + word + ')' + (s.top ? ' · echo top ' + nf(Math.round(s.top / 1000) * 1000) + ' ft' : '');
+    }
     e.classList.toggle('warn', t >= T_ELEV0 && t < T_ELEV1); e.classList.toggle('over', t >= T_ELEV1);
   }
 
