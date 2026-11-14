@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>N722BD Learjet 60 – flight path reconstruction</title>
+<meta name="description" content="Independent 3D reconstruction of the final flight of Learjet 60 N722BD, 1 November 2026, from public ADS-B data. Not an NTSB product.">
+<link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.147/Build/Cesium/Widgets/widgets.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div id="scene" aria-label="3D view of the flight path"></div>
+
+<aside id="left">
+<header class="panel" id="titleBlock">
+  <h1>N722BD <span>Learjet 60</span></h1>
+  <p class="sub">Greenacres, Florida · 1 November 2026</p>
+  <p class="disclaimer">Not an NTSB product. Independent reconstruction from public data.</p>
+</header>
+
+<section class="panel" id="hud" aria-label="Flight data at the current time">
+  <div class="clock"><span id="hUtc">--:--:--</span><small>UTC</small><span class="local" id="hLocal"></span></div>
+  <p id="hStatus" hidden>Impact at 17:49:33 UTC. Readings below are the last ones broadcast.</p>
+  <dl>
+    <div><dt>Altitude <small>pressure</small></dt><dd id="hAlt">--</dd></div>
+    <div><dt>Altitude <small>GPS</small></dt><dd id="hGps">--</dd></div>
+    <div><dt>Vertical speed</dt><dd id="hVs">--</dd></div>
+    <div><dt>Groundspeed</dt><dd id="hGs">--</dd></div>
+    <div class="lim" id="rowMach"><dt>Mach</dt><dd id="hMach">--</dd></div>
+    <div class="lim" id="rowCas"><dt>Airspeed <small>calibrated</small></dt><dd id="hCas">--</dd></div>
+    <div class="wide"><dt>Limit here</dt><dd id="hLimit">--</dd></div>
+    <div><dt>Path angle</dt><dd id="hFpa">--</dd></div>
+    <div><dt>Bank</dt><dd id="hBank">--</dd></div>
+    <div><dt>Load</dt><dd id="hG">--</dd></div>
+    <div><dt>To impact site</dt><dd id="hDist">--</dd></div>
+    <div class="wide"><dt>Left elevator</dt><dd id="hElev">Attached</dd></div>
+  </dl>
+  <p class="note">Altitude, position and groundspeed are broadcast ADS-B values. Mach, airspeed, bank and load are computed from them. Attitude is estimated from the flight path.</p>
+</section>
+</aside>
+
+<aside id="right">
+<section class="panel" id="story" aria-label="Sequence of events">
+  <h2>Sequence</h2>
+  <ol id="chapters"></ol>
+  <div id="chapterText" aria-live="polite"></div>
+</section>
+
+<nav class="panel" id="views" aria-label="View controls">
+  <div class="group" role="group" aria-label="Camera">
+    <span class="lbl">Camera</span>
+    <button data-cam="chase" class="on">Chase</button>
+    <button data-cam="street">Street</button>
+    <button data-cam="overview">Overview</button>
+    <button data-cam="top">Top-down</button>
+  </div>
+  <div class="group" role="group" aria-label="Ground">
+    <span class="lbl">Ground</span>
+    <button data-ground="photoreal">Photoreal 3D</button>
+    <button data-ground="satellite">Satellite</button>
+    <button data-ground="usgs">USGS aerial</button>
+  </div>
+  <div class="group" role="group" aria-label="Layers">
+    <span class="lbl">Show</span>
+    <label><input type="checkbox" id="lyCurtain" checked> Altitude curtain</label>
+    <label><input type="checkbox" id="lyLabels" checked> Labels</label>
+    <label><input type="checkbox" id="lyDebris" checked> Elevator debris range</label>
+  </div>
+  <p id="groundNote" class="note" aria-live="polite"></p>
+</nav>
+</aside>
+
+<footer class="panel" id="transport" aria-label="Playback">
+  <button id="btnPlay" aria-label="Play">▶</button>
+  <div class="speeds" role="group" aria-label="Playback speed">
+    <button data-speed="0.25">¼×</button>
+    <button data-speed="1" class="on">1×</button>
+    <button data-speed="4">4×</button>
+    <button data-speed="20">20×</button>
+    <button data-speed="120">120×</button>
+  </div>
+  <div class="scrub">
+    <div id="ticks" aria-hidden="true"></div>
+    <input type="range" id="scrubber" min="0" max="1000" value="0" step="1" aria-label="Time">
+  </div>
+  <div class="windows" role="group" aria-label="Time range">
+    <button data-win="dive" class="on">Dive</button>
+    <button data-win="last">Last 15 min</button>
+    <button data-win="all">Whole flight</button>
+  </div>
+  <button id="btnAbout">Sources and method</button>
+</footer>
+
+<div id="loading" class="panel">Loading the scene…</div>
+
+<dialog id="about">
+  <h2>Sources and method</h2>
+  <p>This is an independent, unofficial reconstruction of the final flight of Learjet 60 N722BD on 1 November 2026. Nine people on board died. The NTSB investigation is ongoing and its findings take precedence over anything shown here.</p>
+  <h3>What is measured</h3>
+  <ul>
+    <li>Position, altitude, groundspeed and track are the aircraft's own ADS-B broadcasts, from the adsb.lol open archive (Open Database License).</li>
+    <li>Temperature, pressure and wind come from the two Miami weather-balloon soundings that bracket the accident (12:00 UTC 1 Nov and 00:00 UTC 2 Nov), via the Iowa Environmental Mesonet archive.</li>
+    <li>Speed and load limits are from the Learjet 60 Airplane Flight Manual.</li>
+  </ul>
+  <h3>What is computed or estimated</h3>
+  <ul>
+    <li>Descent rate in the dive is computed from GPS altitude, because the broadcast rate stops at −32,640 ft/min.</li>
+    <li>Mach and calibrated airspeed are computed from groundspeed, descent rate and the measured atmosphere. Expect about ±0.03 Mach and ±5% airspeed.</li>
+    <li>Bank and load are computed from how fast the track and path angle change. The aircraft's attitude is drawn along its flight path; the real pitch and roll attitude were not broadcast.</li>
+    <li>Pressure altitude stopped updating at 8,750 ft; below that only GPS altitude is shown.</li>
+    <li>The NTSB reported most of the left elevator in three pieces, 1.3 to 3.8 miles from the impact site. When each piece left the aircraft is not known. The model shows the elevator as "separating" along the stretch of track that lies 3.8 to 1.3 miles out; that timing is an estimate.</li>
+    <li>The drawn path is lightly smoothed during the dive, because GPS altitude is broadcast in 25 ft steps and positions carry small timing errors. The readouts use the unsmoothed values.</li>
+    <li>The street-level camera position is approximate.</li>
+  </ul>
+  <h3>Credits</h3>
+  <ul>
+    <li>Aircraft model based on "Bombardier Learjet 60" by OUTPISTON (sketchfab.com/outpiston), licensed CC BY-NC-SA 4.0. Modified: the left elevator was regrouped into its own part. Non-commercial use only. The paint scheme and the registration painted on the model are not those of N722BD.</li>
+    <li>Ground imagery and terrain: see the credits shown at the bottom of the 3D view for the layer in use.</li>
+    <li>3D engine: CesiumJS.</li>
+  </ul>
+  <p><a href="https://github.com/DravenToothman/n722bd-reconstruction" target="_blank" rel="noopener">Data and analysis scripts on GitHub</a></p>
+  <form method="dialog"><button>Close</button></form>
+</dialog>
+
+<script src="https://cesium.com/downloads/cesiumjs/releases/1.147/Build/Cesium/Cesium.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
