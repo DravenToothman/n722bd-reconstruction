@@ -169,14 +169,15 @@
   }
   // Weather radar: a curtain along the ground track and a level slice at cruise height
   let radarPath = null, radarLevel = null;
-  const radarFaint = C.Color.WHITE.withAlpha(0.4);   // close-up cameras look along the curtain, so it is drawn fainter there
+  const radarFull = new C.Color(1, 1, 1, 1);
+  const radarFaint = new C.Color(1, 1, 1, 0.4);   // close-up cameras look along the curtain, so it is drawn fainter there
   const curtainOn = () => $('lyCurtain').checked && !(RADAR && $('lyRadarPath').checked);   // the two curtains share a plane
   function buildRadar() {
     radarDs.entities.removeAll(); radarPath = radarLevel = null;
     if (!RADAR) return;
     const c = RADAR.curtain, n = c.lat.length, pos = [], lo = [], hi = [];
     for (let i = 0; i < n; i++) { pos.push(C.Cartesian3.fromDegrees(c.lon[i], c.lat[i])); lo.push(H_GROUND + bias); hi.push(c.topMslM - RADAR.geoidM + bias); }
-    radarPath = radarDs.entities.add({ show: $('lyRadarPath').checked, wall: { positions: pos, minimumHeights: lo, maximumHeights: hi, material: new C.ImageMaterialProperty({ image: c.image, transparent: true, color: new C.CallbackProperty(() => (camMode === 'chase' || camMode === 'street' ? radarFaint : C.Color.WHITE), false) }) } });
+    radarPath = radarDs.entities.add({ show: $('lyRadarPath').checked, wall: { positions: pos, minimumHeights: lo, maximumHeights: hi, material: new C.ImageMaterialProperty({ image: c.image, transparent: true, color: new C.CallbackProperty((time, result) => C.Color.clone(camMode === 'chase' || camMode === 'street' ? radarFaint : radarFull, result || new C.Color()), false) }) } });
     const v = RADAR.level;
     radarLevel = radarDs.entities.add({ show: $('lyRadarLevel').checked, rectangle: { coordinates: C.Rectangle.fromDegrees(v.west, v.south, v.east, v.north), height: v.mslM - RADAR.geoidM + bias, material: new C.ImageMaterialProperty({ image: v.image, transparent: true }) } });
   }
