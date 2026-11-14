@@ -13,12 +13,13 @@
 
 <aside id="left">
 <header class="panel" id="titleBlock">
-  <h1>N722BD <span>Learjet 60</span></h1>
-  <p class="sub">Greenacres, Florida · 1 November 2026</p>
-  <p class="disclaimer">Not an NTSB product. Independent reconstruction from public data.</p>
+  <div class="tb"><h1>N722BD</h1><span class="chip">LJ60</span></div>
+  <p class="sub">Learjet 60 · Greenacres, FL · 1 Nov 2026</p>
+  <p class="disclaimer">Independent reconstruction from public data. Not an NTSB product.</p>
 </header>
 
 <section class="panel" id="hud" aria-label="Flight data at the current time">
+  <div class="ph"><h2>Flight data</h2><span class="badge">ADS-B</span><button class="chev" aria-expanded="true" aria-label="Collapse section"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10l5-5 5 5"/></svg></button></div>
   <div class="clock"><span id="hUtc">--:--:--</span><small>UTC</small><span class="local" id="hLocal"></span></div>
   <p id="hStatus" hidden>Impact at 17:49:33 UTC. Readings below are the last ones broadcast.</p>
   <dl>
@@ -42,12 +43,13 @@
 
 <aside id="right">
 <section class="panel" id="story" aria-label="Sequence of events">
-  <h2>Sequence</h2>
+  <div class="ph"><h2>Sequence</h2><button class="chev" aria-expanded="true" aria-label="Collapse section"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10l5-5 5 5"/></svg></button></div>
   <ol id="chapters"></ol>
   <div id="chapterText" aria-live="polite"></div>
 </section>
 
 <nav class="panel" id="views" aria-label="View controls">
+  <div class="ph"><h2>View</h2><button class="chev" aria-expanded="true" aria-label="Collapse section"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10l5-5 5 5"/></svg></button></div>
   <div class="group" role="group" aria-label="Camera">
     <span class="lbl">Camera</span>
     <button data-cam="chase" class="on">Chase</button>
@@ -61,7 +63,7 @@
     <button data-ground="satellite">Satellite</button>
     <button data-ground="usgs">USGS aerial</button>
   </div>
-  <div class="group" role="group" aria-label="Layers">
+  <div class="group layers" role="group" aria-label="Layers">
     <span class="lbl">Show</span>
     <label><input type="checkbox" id="lyCurtain" checked> Altitude curtain</label>
     <label><input type="checkbox" id="lyLabels" checked> Labels</label>
@@ -75,7 +77,7 @@
 </aside>
 
 <footer class="panel" id="transport" aria-label="Playback">
-  <button id="btnPlay" aria-label="Play">▶</button>
+  <button id="btnPlay" aria-label="Play"><svg class="ico play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z"/></svg><svg class="ico pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5h3v11H4zM9 2.5h3v11H9z"/></svg></button>
   <div class="speeds" role="group" aria-label="Playback speed">
     <button data-speed="0.25">¼×</button>
     <button data-speed="1" class="on">1×</button>
@@ -103,7 +105,7 @@
   <div class="tabs" role="tablist">
     <button role="tab" data-tab="radio" class="on" aria-selected="true">Radio</button>
     <button role="tab" data-tab="wx" aria-selected="false">Weather</button>
-    <button id="btnCommsClose" class="x" aria-label="Close panel">✕</button>
+    <button id="btnCommsClose" class="x" aria-label="Close panel">Close</button>
   </div>
   <div id="tabRadio">
     <div class="audioBar">

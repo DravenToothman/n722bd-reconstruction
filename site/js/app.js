@@ -27,7 +27,12 @@
   const DAY0 = C.JulianDate.fromIso8601(F.date + 'T00:00:00Z');
   const jd = (t) => C.JulianDate.addSeconds(DAY0, t, new C.JulianDate());
   const secOf = (j) => C.JulianDate.secondsDifference(j, DAY0);
-  let commsApi = {};                                              // radio and weather module, set up after the data loads
+  let commsApi = {};
+  document.querySelectorAll('.panel .chev').forEach(b => b.addEventListener('click', () => {
+    const p = b.closest('.panel'), c = p.classList.toggle('collapsed');
+    b.setAttribute('aria-expanded', String(!c)); b.setAttribute('aria-label', c ? 'Expand section' : 'Collapse section');
+  }));
+  if (window.matchMedia('(max-width: 760px)').matches) { const b = document.querySelector('#views .chev'); if (b) b.click(); }                                              // radio and weather module, set up after the data loads
   let bias = 0;                                                  // metres added to every height so the path meets the drawn ground
 
   function indexAt(t) {
@@ -343,7 +348,7 @@
   const WINDOWS = { dive: [hms('17:47:25'), T_END], last: [hms('17:34:00'), T_END], all: [T_START, T_END] };
   let win = 'dive';
   const scrubber = $('scrubber');
-  function setPlaying(on) { clock.shouldAnimate = on; $('btnPlay').textContent = on ? '❚❚' : '▶'; $('btnPlay').setAttribute('aria-label', on ? 'Pause' : 'Play'); }
+  function setPlaying(on) { clock.shouldAnimate = on; $('btnPlay').classList.toggle('playing', on); $('btnPlay').setAttribute('aria-label', on ? 'Pause' : 'Play'); }
   function seek(t, keepWindow) {
     t = clamp(t, T_START, T_END);
     if (keepWindow && (t < WINDOWS[win][0] || t > WINDOWS[win][1])) setWindow(t < WINDOWS.last[0] ? 'all' : t < WINDOWS.dive[0] ? 'last' : 'dive', true);
